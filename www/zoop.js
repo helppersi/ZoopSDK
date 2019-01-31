@@ -1,5 +1,5 @@
 module.exports = {
-	startDiscovery: function(mensagem, sucesso, erro){
-		cordova.exec(sucesso, erro, "ZoopSDK", "startDiscovery", []);
+	startDiscovery: () => {
+		cordova.exec(null, null, "ZoopSDK", "startDiscovery", []);
 	}
 }
