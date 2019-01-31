@@ -1,5 +1,5 @@
 module.exports = {
-	exibe: function(mensagem, sucesso, erro){
-		cordova.exec(sucesso, erro, "ZoopPlugin", "exibe", [mensagem]);
+	exibe: (mensagem) => {
+		cordova.exec(sucesso, erro, "ZoopPlugin", "startDiscovery", []);
 	}
 }

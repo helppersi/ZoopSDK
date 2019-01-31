@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="br.com.helpper.zoop_plugin" version="0.0.1">
 
-	<name>ZoopPlugin</name>
-	<description>Integração com o sdk do Zoop</description>
+	<name>Zoop SDK</name>
+	<description>Integração com o sdk Zoop</description>
 
 	<engines>
 		<engine name="cordova" version=">=4.0.0" />
@@ -10,13 +10,13 @@
 
 	<asset src="www/zoop.js" target="js/zoop.js" />
 
-	<js-module src="www/zoop.js" name="ZoopPlugin">
+	<js-module src="www/zoop.js" name="ZoopSDK">
 		<clobbers target="zoop" />
 	</js-module>
 
 	<platform name="android">
 		<config-file target="res/xml/config.xml" parent="/*">
-			<feature name="ZoopPlugin">
+			<feature name="ZoopSDK">
 				<param name="android-package" value="br.com.helpper.ZoopPlugin" />
 			</feature>
 		</config-file>
@@ -45,6 +45,5 @@
 
         <lib-file src="src/android/libs/zoop_emv_android_sdk_2.0.4.jar" />
 	</platform>
-
 
 </plugin>

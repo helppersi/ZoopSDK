@@ -119,9 +119,9 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     }
 
     @Override
-    public boolean execute(String action, JSONArray args, final CallbackContext callbackCtx) throws JSONException{
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
-        if(action.equals("exibe")) {
+        if(action.equals("startDiscovery")) {
 
             terminalListManager = new TerminalListManager(this, this.cordova.getActivity().getApplicationContext());
             terminalListManager.startTerminalsDiscovery();
