@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="br.com.helpper.zoop_plugin" version="0.0.1">
+
+	<name>ZoopPlugin</name>
+	<description>Integração com o sdk do Zoop</description>
+
+	<engines>
+		<engine name="cordova" version=">=4.0.0" />
+	</engines>
+
+	<asset src="www/zoop.js" target="js/zoop.js" />
+
+	<js-module src="www/zoop.js" name="ZoopPlugin">
+		<clobbers target="zoop" />
+	</js-module>
+
+	<platform name="android">
+		<config-file target="res/xml/config.xml" parent="/*">
+			<feature name="ZoopPlugin">
+				<param name="android-package" value="br.com.helpper.ZoopPlugin" />
+			</feature>
+		</config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.BLUETOOTH" />
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+            <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+            <uses-permission android:name="android.permission.CAMERA" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+        </config-file>
+
+		<source-file src="src/android/ZoopPlugin.java" target-dir="src/br/com/helpper/" />
+
+        <framework src="com.squareup.okhttp3:okhttp:3.6.0" />
+        <framework src="com.google.code.gson:gson:2.7" />
+        <framework src="com.squareup.okhttp3:okhttp-urlconnection:3.4.1" />
+        <framework src="com.squareup.retrofit2:retrofit:2.1.0" />
+        <framework src="com.squareup.retrofit2:converter-gson:2.1.0" />
+        <framework src="com.squareup.okhttp3:logging-interceptor:3.9.1" />
+
+        <lib-file src="src/android/libs/zoop_emv_android_sdk_2.0.4.jar" />
+	</platform>
+
+
+</plugin>
