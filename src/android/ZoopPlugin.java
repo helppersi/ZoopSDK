@@ -126,7 +126,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
         }
     }
 
-    public log(String message) {
+    public void log(String message) {
         if(this.listenerLogs) {
             this.listenerLogs.success(message);
         }
