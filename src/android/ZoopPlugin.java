@@ -21,6 +21,12 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
 
     TerminalListManager terminalListManager;
 
+    CallbackContext listenerShowDeviceListForUserSelection;
+    CallbackContext listenerUpdateDeviceListForUserSelecion;
+    CallbackContext listenerBluetoothIsNotEnabledNotification;
+    CallbackContext listenerDeviceSelectedResult;
+    CallbackContext listenerLogs;
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
@@ -33,121 +39,167 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
 
     @Override
     public void onDestroy() {
-        terminalListManager.finishTerminalDiscovery();
+        try {
+            terminalListManager.finishTerminalDiscovery();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 
     @Override
     public void showDeviceListForUserSelection(final Vector<JSONObject> vectorZoopTerminals) {
         try {
-            if(vectorZoopTerminals.size() > 0) {
-                cordova.getActivity().runOnUiThread(new Runnable(){
-                    public void run() {
-                        android.widget.Toast toast = android.widget.Toast.makeText(
-                                cordova.getActivity().getApplicationContext(),
-                                vectorZoopTerminals.get(0).toString(),
-                                android.widget.Toast.LENGTH_LONG
-                        );
+            if(this.listenerShowDeviceListForUserSelection) {
+                JSONArray array = new JSONArray();
+                for(JSONObject object : vectorZoopTerminals) {
+                    array.put(object);
+                }
 
-                        toast.show();
-                    }
-                });
-                //terminalListManager.requestZoopDeviceSelection(vectorZoopTerminals.get(0));
-            }
-            else {
-                cordova.getActivity().runOnUiThread(new Runnable(){
-                    public void run() {
-                        android.widget.Toast toast = android.widget.Toast.makeText(
-                                cordova.getActivity().getApplicationContext(),
-                                "Nenhum dispositivo encontrado",
-                                android.widget.Toast.LENGTH_LONG
-                        );
-
-                        toast.show();
-                    }
-                });
+                this.log("Devices: " + vectorZoopTerminals.size());
+                this.listenerShowDeviceListForUserSelection.success(array);
             }
         }
         catch (Exception e) {
-            ZLog.exception(300064, e);
+            this.error(e, this.listenerShowDeviceListForUserSelection);
         }
     }
 
     @Override
-    public void updateDeviceListForUserSelecion(JSONObject joNewlyFoundZoopDevice, Vector<JSONObject> vectorZoopTerminals, int iNewlyFoundDeviceIndex) {
+    public void updateDeviceListForUserSelecion(JSONObject newFoundZoopDevice, Vector<JSONObject> vectorZoopTerminals, int index) {
         try {
-            //terminalListManager.requestZoopDeviceSelection(joNewlyFoundZoopDevice);
-            final JSONObject device = joNewlyFoundZoopDevice;
-            this.cordova.getActivity().runOnUiThread(new Runnable(){
-                public void run() {
-                    android.widget.Toast toast = android.widget.Toast.makeText(
-                            cordova.getActivity().getApplicationContext(),
-                            device.toString(),
-                            android.widget.Toast.LENGTH_LONG
-                    );
-                    toast.show();
+            if(this.listenerUpdateDeviceListForUserSelecion) {
+                JSONObject data = new JSONObject();
+                data.put("device", newFoundZoopDevice);
+                data.put("deviceIndex", index);
+
+                JSONArray array = new JSONArray();
+                for(JSONObject object : vectorZoopTerminals) {
+                    array.put(object);
                 }
-            });
-        } catch (Exception e) {
-            ZLog.exception(677541, e);
+                data.put("zoopTerminals", array);
+
+                this.log("New Device: " + newFoundZoopDevice.getString("name"));
+                this.listenerUpdateDeviceListForUserSelecion.success(data);
+            }
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerUpdateDeviceListForUserSelecion);
         }
     }
 
     @Override
     public void bluetoothIsNotEnabledNotification() {
-        this.cordova.getActivity().runOnUiThread(new Runnable(){
-            public void run() {
-                android.widget.Toast toast = android.widget.Toast.makeText(
-                        cordova.getActivity().getApplicationContext(),
-                        "BLUETOOTH desabilidade",
-                        android.widget.Toast.LENGTH_LONG
-                );
-
-                //toast.show();
+        this.log("Bluetooth Is Not Enable");
+        try {
+            if(this.listenerBluetoothIsNotEnabledNotification) {
+                this.listenerBluetoothIsNotEnabledNotification.success();
             }
-        });
-        terminalListManager.enableDeviceBluetoothAdapter();
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerBluetoothIsNotEnabledNotification);
+        }
     }
 
     @Override
-    public void deviceSelectedResult(JSONObject joZoopSelectedDevice, Vector<JSONObject> vectorAllAvailableZoopTerminals, int iSelectedDeviceIndex) {
-        //String namePinpad = joZoopSelectedDevice.getString("name");
+    public void deviceSelectedResult(JSONObject selectedDevice, Vector<JSONObject> allAvailableZoopTerminals, int index) {
+        try {
+            this.log("Select Device: " + selectedDevice.getString("name"));
+
+            if(this.listenerDeviceSelectedResult) {
+                JSONObject data = new JSONObject();
+                data.put("device", selectedDevice);
+                data.put("deviceIndex", index);
+
+                JSONArray array = new JSONArray();
+                for(JSONObject object : allAvailableZoopTerminals) {
+                    array.put(object);
+                }
+                data.put("allAvailableZoopTerminals", array);
+
+                this.listenerDeviceSelectedResult.success(data);
+            }
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerDeviceSelectedResult);
+        }
     }
 
-    public void stopDiscovery(){
-        terminalListManager.finishTerminalDiscovery();
+    public log(String message) {
+        if(this.listenerLogs) {
+            this.listenerLogs.success(message);
+        }
+    }
+
+    private void error(Exception exception, CallbackContext listener) {
+        this.log("Erro: " + exception.getMessage());
+        exception.printStackTrace();
+        if(listener) {
+            listener.error(exception.getMessage());
+        }
     }
 
     @Override
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
         if(action.equals("startDiscovery")) {
-
-            terminalListManager = new TerminalListManager(this, this.cordova.getActivity().getApplicationContext());
             terminalListManager.startTerminalsDiscovery();
-
-            //final String dados = args.getString(0);
-            //final String mensagem = "Sua mensagem: "+dados;
-
-            /*
-            this.cordova.getActivity().runOnUiThread(new Runnable(){
-                public void run() {
-                    android.widget.Toast toast = android.widget.Toast.makeText(
-                            this.cordova.getActivity().getApplicationContext(),
-                            mensagem,
-                            android.widget.Toast.LENGTH_LONG
-                    );
-
-                    toast.show();
-
-                    callbackCtx.success();
-                }
-            });
-            */
-
+            terminalListManager = new TerminalListManager(this, this.cordova.getActivity().getApplicationContext());
+            this.log("Start Discovery");
             return true;
-
         }
+
+        else if(action.equals("enableDeviceBluetoothAdapter")) {
+            terminalListManager.enableDeviceBluetoothAdapter();
+            this.log("Enable Device BluetoothAdapter");
+            return true;
+        }
+
+        else if(action.equals("requestZoopDeviceSelection")) {
+            // Get variable
+            final String device = args.getString(0);
+            terminalListManager.requestZoopDeviceSelection(device);
+            return true;
+        }
+
+        else if(action.equals("finishDiscovery")) {
+            terminalListManager.finishTerminalDiscovery();
+            this.listenerShowDeviceListForUserSelection = null;
+            this.listenerUpdateDeviceListForUserSelecion = null;
+            this.listenerBluetoothIsNotEnabledNotification = null;
+            this.listenerDeviceSelectedResult = null;
+            return true;
+        }
+
+
+        // Listeners Device
+
+        else if(action.equals("showDeviceListForUserSelection")) {
+            this.listenerShowDeviceListForUserSelection = callbackContext;
+            return true;
+        }
+
+        else if(action.equals("updateDeviceListForUserSelecion")) {
+            this.listenerUpdateDeviceListForUserSelecion = callbackContext;
+            return true;
+        }
+
+        else if(action.equals("bluetoothIsNotEnabledNotification")) {
+            this.listenerBluetoothIsNotEnabledNotification = callbackContext;
+            return true;
+        }
+
+        else if(action.equals("deviceSelectedResult")) {
+            this.listenerDeviceSelectedResult = callbackContext;
+            return true;
+        }
+
+        else if(action.equals("logsObserver")) {
+            this.listenerLogs = callbackContext;
+            return true;
+        }
+
         else
             return false;
 
