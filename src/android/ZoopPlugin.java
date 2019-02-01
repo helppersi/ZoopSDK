@@ -158,7 +158,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
 
         else if(action.equals("requestZoopDeviceSelection")) {
             // Get variable
-            final String device = args.getString(0);
+            final JSONObject device = args.getJSONObject(0);
             terminalListManager.requestZoopDeviceSelection(device);
             return true;
         }
