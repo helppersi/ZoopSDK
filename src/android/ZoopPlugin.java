@@ -51,7 +51,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     @Override
     public void showDeviceListForUserSelection(final Vector<JSONObject> vectorZoopTerminals) {
         try {
-            if(this.listenerShowDeviceListForUserSelection) {
+            if(this.listenerShowDeviceListForUserSelection != null) {
                 JSONArray array = new JSONArray();
                 for(JSONObject object : vectorZoopTerminals) {
                     array.put(object);
@@ -69,7 +69,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     @Override
     public void updateDeviceListForUserSelecion(JSONObject newFoundZoopDevice, Vector<JSONObject> vectorZoopTerminals, int index) {
         try {
-            if(this.listenerUpdateDeviceListForUserSelecion) {
+            if(this.listenerUpdateDeviceListForUserSelecion != null) {
                 JSONObject data = new JSONObject();
                 data.put("device", newFoundZoopDevice);
                 data.put("deviceIndex", index);
@@ -93,7 +93,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     public void bluetoothIsNotEnabledNotification() {
         this.log("Bluetooth Is Not Enable");
         try {
-            if(this.listenerBluetoothIsNotEnabledNotification) {
+            if(this.listenerBluetoothIsNotEnabledNotification != null) {
                 this.listenerBluetoothIsNotEnabledNotification.success();
             }
         }
@@ -107,7 +107,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
         try {
             this.log("Select Device: " + selectedDevice.getString("name"));
 
-            if(this.listenerDeviceSelectedResult) {
+            if(this.listenerDeviceSelectedResult != null) {
                 JSONObject data = new JSONObject();
                 data.put("device", selectedDevice);
                 data.put("deviceIndex", index);
@@ -127,7 +127,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     }
 
     public void log(String message) {
-        if(this.listenerLogs) {
+        if(this.listenerLogs != null) {
             this.listenerLogs.success(message);
         }
     }
@@ -135,7 +135,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     private void error(Exception exception, CallbackContext listener) {
         this.log("Erro: " + exception.getMessage());
         exception.printStackTrace();
-        if(listener) {
+        if(listener != null) {
             listener.error(exception.getMessage());
         }
     }
