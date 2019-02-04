@@ -10,14 +10,16 @@ import com.zoop.zoopandroidsdk.TerminalListManager;
 import com.zoop.zoopandroidsdk.ZoopAPI;
 import com.zoop.zoopandroidsdk.commons.ZLog;
 import com.zoop.zoopandroidsdk.terminal.DeviceSelectionListener;
+import com.zoop.zoopandroidsdk.ZoopTerminalPayment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import java.math.BigDecimal;
 import java.util.Vector;
 
-public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener {
+public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener, TerminalPaymentListener, ApplicationDisplayListener {
 
     TerminalListManager terminalListManager;
 
@@ -26,6 +28,13 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     CallbackContext listenerBluetoothIsNotEnabledNotification;
     CallbackContext listenerDeviceSelectedResult;
     CallbackContext listenerLogs;
+
+    // Payment
+    CallbackContext listenerPayment;
+    CallbackContext listenerCardholderSignatureRequested;
+    CallbackContext listenerCurrentChargeCanBeAbortedByUser;
+    CallbackContext listenerSignatureResult;
+    CallbackContext listenerShowMessage;
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -50,6 +59,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
 
     @Override
     public void showDeviceListForUserSelection(final Vector<JSONObject> vectorZoopTerminals) {
+        this.log("Devices: " + vectorZoopTerminals.size());
         try {
             if(this.listenerShowDeviceListForUserSelection != null) {
                 JSONArray array = new JSONArray();
@@ -57,7 +67,6 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
                     array.put(object);
                 }
 
-                this.log("Devices: " + vectorZoopTerminals.size());
                 this.listenerShowDeviceListForUserSelection.success(array);
             }
         }
@@ -69,6 +78,8 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     @Override
     public void updateDeviceListForUserSelecion(JSONObject newFoundZoopDevice, Vector<JSONObject> vectorZoopTerminals, int index) {
         try {
+            this.log("New Device: " + newFoundZoopDevice.getString("name"));
+
             if(this.listenerUpdateDeviceListForUserSelecion != null) {
                 JSONObject data = new JSONObject();
                 data.put("device", newFoundZoopDevice);
@@ -80,7 +91,6 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
                 }
                 data.put("zoopTerminals", array);
 
-                this.log("New Device: " + newFoundZoopDevice.getString("name"));
                 this.listenerUpdateDeviceListForUserSelecion.success(data);
             }
         }
@@ -140,12 +150,137 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
         }
     }
 
+
+    /*
+     *
+     *  Payment listeners
+     *
+     *
+     */
+
+    public void paymentSendListener(JSONObject data) {
+        try {
+            if(this.listenerPayment != null) {
+                this.listenerPayment.success(data);
+            }
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerPayment);
+        }
+    }
+
+    @Override
+    public void paymentSuccessful(JSONObject jsonObject) {
+        this.log("Payment Successful: " + jsonObject.toString());
+
+        JSONObject data = new JSONObject();
+        data.put("success", true);
+        data.put("data", jsonObject);
+        this.paymentSendListener(data);
+    }
+
+    @Override
+    public void paymentFailed(JSONObject jsonObject) {
+        this.log("Payment Failed: " + jsonObject.toString());
+
+        JSONObject data = new JSONObject();
+        data.put("success", false);
+        data.put("data", jsonObject);
+        this.paymentSendListener(data);
+    }
+
+    @Override
+    public void paymentAborted() {
+        this.log("Payment Aborted");
+
+        JSONObject data = new JSONObject();
+        data.put("success", false);
+        this.paymentSendListener(data);
+    }
+
+    @Override
+    public void cardholderSignatureRequested() {
+        try {
+            this.log("cardholderSignatureRequested");
+
+            if(this.listenerCardholderSignatureRequested != null) {
+                this.listenerCardholderSignatureRequested.success();
+            }
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerCardholderSignatureRequested);
+        }
+    }
+
+    @Override
+    public void currentChargeCanBeAbortedByUser(boolean b) {
+        try {
+            this.log("currentChargeCanBeAbortedByUser");
+
+            if(this.listenerCurrentChargeCanBeAbortedByUser != null) {
+                this.listenerCurrentChargeCanBeAbortedByUser.success(b);
+            }
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerCurrentChargeCanBeAbortedByUser);
+        }
+    }
+
+
+    @Override
+    public void signatureResult(int i) {
+        try {
+            this.log("signatureResult: " + i);
+
+            if(this.listenerSignatureResult != null) {
+                this.listenerSignatureResult.success(i);
+            }
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerSignatureResult);
+        }
+    }
+
+    @Override
+    public void showMessage(String s, TerminalMessageType terminalMessageType) {
+        try {
+            this.log("listenerShowMessage: " + i);
+
+            if(this.listenerShowMessage != null) {
+                JSONObject data = new JSONObject();
+                data.put("msg", s);
+                this.listenerShowMessage.success(data);
+            }
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerShowMessage);
+        }
+    }
+
+    @Override
+    public void showMessage(String s, TerminalMessageType terminalMessageType, String s1) {
+        try {
+            this.log("listenerShowMessage: " + i);
+
+            if(this.listenerShowMessage != null) {
+                JSONObject data = new JSONObject();
+                data.put("msg", s);
+                data.put("msg2", s1);
+                this.listenerShowMessage.success(data);
+            }
+        }
+        catch (Exception e) {
+            this.error(e, this.listenerShowMessage);
+        }
+    }
+
+
     @Override
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
         if(action.equals("startDiscovery")) {
-            terminalListManager.startTerminalsDiscovery();
             terminalListManager = new TerminalListManager(this, this.cordova.getActivity().getApplicationContext());
+            terminalListManager.startTerminalsDiscovery();
             this.log("Start Discovery");
             return true;
         }
@@ -199,6 +334,60 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
             this.listenerLogs = callbackContext;
             return true;
         }
+
+
+        // Payments
+
+        else if(action.equals("payment")) {
+            this.listenerPayment = callbackContext;
+            return true;
+        }
+
+        else if(action.equals("cardholderSignatureRequested")) {
+            this.listenerCardholderSignatureRequested = callbackContext;
+            return true;
+        }
+
+        else if(action.equals("currentChargeCanBeAbortedByUser")) {
+            this.listenerCurrentChargeCanBeAbortedByUser = callbackContext;
+            return true;
+        }
+
+        else if(action.equals("signatureResult")) {
+            this.listenerSignatureResult = callbackContext;
+            return true;
+        }
+
+        else if(action.equals("showMessage")) {
+            this.listenerShowMessage = callbackContext;
+            return true;
+        }
+
+        // execute order
+        else if(action.equals("charge")) {
+
+            // vars
+            final double valueToCharge = args.getDouble(0);
+            final int paymentOption = args.getInt(1);
+            /*final int iNumberOfInstallments = args.getInt(2);
+            final String marketplaceId = args.getString(3);
+            final String sellerId = args.getString(4);
+            final String publishableKey = args.getString(5);*/
+
+            ZoopTerminalPayment zoopTerminalPayment = new ZoopTerminalPayment();
+            zoopTerminalPayment.setTerminalPaymentListener(this.cordova.getActivity());
+            zoopTerminalPayment.setApplicationDisplayListener(this.cordova.getActivity());
+            zoopTerminalPayment.setExtraCardInformationListener(this.cordova.getActivity());
+            zoopTerminalPayment.charge(new BigDecimal(valueToCharge),
+                                     paymentOption);/*,
+                                     iNumberOfInstallments,
+                                     marketplaceId,
+                                     sellerId,
+                                     publishableKey);*/
+            return true;
+        }
+
+
 
         else
             return false;
