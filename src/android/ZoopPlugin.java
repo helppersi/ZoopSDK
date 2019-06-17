@@ -382,7 +382,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
             ZoopTerminalPayment zoopTerminalPayment = new ZoopTerminalPayment();
             zoopTerminalPayment.setTerminalPaymentListener(this);
             zoopTerminalPayment.setApplicationDisplayListener(this);
-            zoopTerminalPayment.setExtraCardInformationListener(this);
+            //zoopTerminalPayment.setExtraCardInformationListener(this);
             zoopTerminalPayment.charge(new BigDecimal(valueToCharge),
                                      paymentOption,
                                      iNumberOfInstallments,
