@@ -222,7 +222,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
             this.log("currentChargeCanBeAbortedByUser");
 
             if(this.listenerCurrentChargeCanBeAbortedByUser != null) {
-                this.listenerCurrentChargeCanBeAbortedByUser.success(b);
+                this.listenerCurrentChargeCanBeAbortedByUser.success(b ? 1 : 0);
             }
         }
         catch (Exception e) {
@@ -248,7 +248,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     @Override
     public void showMessage(String s, TerminalMessageType terminalMessageType) {
         try {
-            this.log("listenerShowMessage: " + i);
+            this.log("listenerShowMessage: " + s);
 
             if(this.listenerShowMessage != null) {
                 JSONObject data = new JSONObject();
@@ -264,7 +264,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     @Override
     public void showMessage(String s, TerminalMessageType terminalMessageType, String s1) {
         try {
-            this.log("listenerShowMessage: " + i);
+            this.log("listenerShowMessage: " + s);
 
             if(this.listenerShowMessage != null) {
                 JSONObject data = new JSONObject();
@@ -373,21 +373,23 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
             // vars
             final double valueToCharge = args.getDouble(0);
             final int paymentOption = args.getInt(1);
-            /*final int iNumberOfInstallments = args.getInt(2);
+            final int iNumberOfInstallments = args.getInt(2);
             final String marketplaceId = args.getString(3);
             final String sellerId = args.getString(4);
-            final String publishableKey = args.getString(5);*/
+            final String publishableKey = args.getString(5);
+            final String referenceId = args.getString(6);
 
             ZoopTerminalPayment zoopTerminalPayment = new ZoopTerminalPayment();
-            zoopTerminalPayment.setTerminalPaymentListener(this.cordova.getActivity());
-            zoopTerminalPayment.setApplicationDisplayListener(this.cordova.getActivity());
-            zoopTerminalPayment.setExtraCardInformationListener(this.cordova.getActivity());
+            zoopTerminalPayment.setTerminalPaymentListener(this);
+            zoopTerminalPayment.setApplicationDisplayListener(this);
+            zoopTerminalPayment.setExtraCardInformationListener(this);
             zoopTerminalPayment.charge(new BigDecimal(valueToCharge),
-                                     paymentOption);/*,
+                                     paymentOption,
                                      iNumberOfInstallments,
                                      marketplaceId,
                                      sellerId,
-                                     publishableKey);*/
+                                     publishableKey,
+                                     referenceId);
             return true;
         }
 
