@@ -213,7 +213,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
             this.paymentSendListener(data);
         }
         catch (Exception e) {
-            this.log("Erro: " + exception.getMessage());
+            this.log("Erro: " + e.getMessage());
         }
     }
 
