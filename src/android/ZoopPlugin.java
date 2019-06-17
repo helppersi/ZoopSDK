@@ -9,6 +9,7 @@ import org.apache.cordova.PluginResult;
 import com.zoop.zoopandroidsdk.TerminalListManager;
 import com.zoop.zoopandroidsdk.ZoopAPI;
 import com.zoop.zoopandroidsdk.commons.ZLog;
+import com.zoop.zoopandroidsdk.terminal.TerminalMessageType;
 import com.zoop.zoopandroidsdk.terminal.DeviceSelectionListener;
 import com.zoop.zoopandroidsdk.terminal.TerminalPaymentListener;
 import com.zoop.zoopandroidsdk.terminal.ApplicationDisplayListener;
