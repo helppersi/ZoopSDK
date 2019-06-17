@@ -177,29 +177,44 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     public void paymentSuccessful(JSONObject jsonObject) {
         this.log("Payment Successful: " + jsonObject.toString());
 
-        JSONObject data = new JSONObject();
-        data.put("success", true);
-        data.put("data", jsonObject);
-        this.paymentSendListener(data);
+        try {
+            JSONObject data = new JSONObject();
+            data.put("success", true);
+            data.put("data", jsonObject);
+            this.paymentSendListener(data);
+        }
+        catch (Exception e) {
+            this.log("Erro: " + e.getMessage());
+        }
     }
 
     @Override
     public void paymentFailed(JSONObject jsonObject) {
         this.log("Payment Failed: " + jsonObject.toString());
 
-        JSONObject data = new JSONObject();
-        data.put("success", false);
-        data.put("data", jsonObject);
-        this.paymentSendListener(data);
+        try {
+            JSONObject data = new JSONObject();
+            data.put("success", false);
+            data.put("data", jsonObject);
+            this.paymentSendListener(data);
+        }
+        catch (Exception e) {
+            this.log("Erro: " + e.getMessage());
+        }
     }
 
     @Override
     public void paymentAborted() {
         this.log("Payment Aborted");
 
-        JSONObject data = new JSONObject();
-        data.put("success", false);
-        this.paymentSendListener(data);
+        try {
+            JSONObject data = new JSONObject();
+            data.put("success", false);
+            this.paymentSendListener(data);
+        }
+        catch (Exception e) {
+            this.log("Erro: " + exception.getMessage());
+        }
     }
 
     @Override
@@ -379,21 +394,27 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
             final String publishableKey = args.getString(5);
             final String referenceId = args.getString(6);
 
-            ZoopTerminalPayment zoopTerminalPayment = new ZoopTerminalPayment();
-            zoopTerminalPayment.setTerminalPaymentListener(this);
-            zoopTerminalPayment.setApplicationDisplayListener(this);
-            //zoopTerminalPayment.setExtraCardInformationListener(this);
-            zoopTerminalPayment.charge(new BigDecimal(valueToCharge),
-                                     paymentOption,
-                                     iNumberOfInstallments,
-                                     marketplaceId,
-                                     sellerId,
-                                     publishableKey,
-                                     referenceId);
+            try {
+                ZoopTerminalPayment zoopTerminalPayment = new ZoopTerminalPayment();
+                zoopTerminalPayment.setTerminalPaymentListener(this);
+                zoopTerminalPayment.setApplicationDisplayListener(this);
+                //zoopTerminalPayment.setExtraCardInformationListener(this);
+
+                zoopTerminalPayment.charge(new BigDecimal(valueToCharge),
+                                         paymentOption,
+                                         iNumberOfInstallments,
+                                         marketplaceId,
+                                         sellerId,
+                                         publishableKey,
+                                         referenceId);
+            }
+            catch (Exception e) {
+                this.log("Erro: " + e.getMessage());
+                return false;
+            }
+
             return true;
         }
-
-
 
         else
             return false;
