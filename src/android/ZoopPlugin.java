@@ -10,6 +10,8 @@ import com.zoop.zoopandroidsdk.TerminalListManager;
 import com.zoop.zoopandroidsdk.ZoopAPI;
 import com.zoop.zoopandroidsdk.commons.ZLog;
 import com.zoop.zoopandroidsdk.terminal.DeviceSelectionListener;
+import com.zoop.zoopandroidsdk.terminal.TerminalPaymentListener;
+import com.zoop.zoopandroidsdk.terminal.ApplicationDisplayListener;
 import com.zoop.zoopandroidsdk.ZoopTerminalPayment;
 
 import org.json.JSONArray;
@@ -18,6 +20,7 @@ import org.json.JSONException;
 
 import java.math.BigDecimal;
 import java.util.Vector;
+
 
 public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener, TerminalPaymentListener, ApplicationDisplayListener {
 
