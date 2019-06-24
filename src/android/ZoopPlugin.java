@@ -385,17 +385,20 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
         // execute order
         else if(action.equals("charge")) {
 
-            // vars
-            final double valueToCharge = args.getDouble(0);
-            final int paymentOption = args.getInt(1);
-            final int iNumberOfInstallments = args.getInt(2);
-            final String marketplaceId = args.getString(3);
-            final String sellerId = args.getString(4);
-            final String publishableKey = args.getString(5);
-            final String joMetadado = args.getJSONObject(6);
-            final String referenceId = args.getString(7);
-
             try {
+
+                // vars
+                final double valueToCharge = args.getDouble(0);
+                final int paymentOption = args.getInt(1);
+                final int iNumberOfInstallments = args.getInt(2);
+                final String marketplaceId = args.getString(3);
+                final String sellerId = args.getString(4);
+                final String publishableKey = args.getString(5);
+                final String joMetadado = args.getJSONObject(6);
+                final String referenceId = args.getString(7);
+
+                Log.d("MGD", "TESTE:::::: " + joMetadado.toString());
+
                 ZoopTerminalPayment zoopTerminalPayment = new ZoopTerminalPayment();
                 zoopTerminalPayment.setTerminalPaymentListener(this);
                 zoopTerminalPayment.setApplicationDisplayListener(this);
