@@ -15,6 +15,8 @@ import com.zoop.zoopandroidsdk.terminal.TerminalPaymentListener;
 import com.zoop.zoopandroidsdk.terminal.ApplicationDisplayListener;
 import com.zoop.zoopandroidsdk.ZoopTerminalPayment;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -395,7 +397,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
                 final String sellerId = args.getString(4);
                 final String publishableKey = args.getString(5);
                 final String joMetadado = args.getJSONObject(6);
-                final String referenceId = args.getString(7);
+                final JSONObject referenceId = args.getString(7);
 
                 Log.d("MGD", "TESTE:::::: " + joMetadado.toString());
 
