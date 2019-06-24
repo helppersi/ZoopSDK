@@ -392,7 +392,8 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
             final String marketplaceId = args.getString(3);
             final String sellerId = args.getString(4);
             final String publishableKey = args.getString(5);
-            final String referenceId = args.getString(6);
+            final String joMetadado = args.getJSONObject(6);
+            final String referenceId = args.getString(7);
 
             try {
                 ZoopTerminalPayment zoopTerminalPayment = new ZoopTerminalPayment();
@@ -406,6 +407,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
                                          marketplaceId,
                                          sellerId,
                                          publishableKey,
+                                         joMetadado,
                                          referenceId);
             }
             catch (Exception e) {
