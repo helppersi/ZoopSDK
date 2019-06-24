@@ -396,8 +396,8 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
                 final String marketplaceId = args.getString(3);
                 final String sellerId = args.getString(4);
                 final String publishableKey = args.getString(5);
-                final String joMetadado = args.getJSONObject(6);
-                final JSONObject referenceId = args.getString(7);
+                final JSONObject joMetadado = args.getJSONObject(6);
+                final String referenceId = args.getString(7);
 
                 Log.d("MGD", "TESTE:::::: " + joMetadado.toString());
 
