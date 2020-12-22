@@ -42,9 +42,16 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     CallbackContext listenerSignatureResult;
     CallbackContext listenerShowMessage;
 
+    // Variables
+    JSONArray listMessages;
+
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
+
+        this.listMessages = new JSONArray();
+
         try {
             ZoopAPI.initialize(cordova.getActivity().getApplication());
         } catch (Exception e) {
@@ -267,11 +274,10 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
         try {
             this.log("listenerShowMessage: " + s);
 
-            if(this.listenerShowMessage != null) {
-                JSONObject data = new JSONObject();
-                data.put("msg", s);
-                this.listenerShowMessage.success(data);
-            }
+            JSONObject data = new JSONObject();
+            data.put("msg", s);
+            data.put("type", terminalMessageType.ordinal() + " " + terminalMessageType.name());
+            this.listMessages.put(data);
         }
         catch (Exception e) {
             this.error(e, this.listenerShowMessage);
@@ -281,14 +287,13 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
     @Override
     public void showMessage(String s, TerminalMessageType terminalMessageType, String s1) {
         try {
-            this.log("listenerShowMessage: " + s);
+            this.log("listenerShowMessage: " + s + " :: " + s1);
 
-            if(this.listenerShowMessage != null) {
-                JSONObject data = new JSONObject();
-                data.put("msg", s);
-                data.put("msg2", s1);
-                this.listenerShowMessage.success(data);
-            }
+            JSONObject data = new JSONObject();
+            data.put("msg", s);
+            data.put("msg2", s1);
+            data.put("type", terminalMessageType.ordinal() + " " + terminalMessageType.name());
+            this.listMessages.put(data);
         }
         catch (Exception e) {
             this.error(e, this.listenerShowMessage);
@@ -380,6 +385,7 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
         }
 
         else if(action.equals("showMessage")) {
+            this.listMessages = new JSONArray();
             this.listenerShowMessage = callbackContext;
             return true;
         }
@@ -398,8 +404,6 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
                 final String publishableKey = args.getString(5);
                 final JSONObject joMetadado = args.getJSONObject(6);
                 final String referenceId = args.getString(7);
-
-                Log.d("MGD", "TESTE:::::: " + joMetadado.toString());
 
                 ZoopTerminalPayment zoopTerminalPayment = new ZoopTerminalPayment();
                 zoopTerminalPayment.setTerminalPaymentListener(this);
@@ -423,8 +427,13 @@ public class ZoopPlugin extends CordovaPlugin implements DeviceSelectionListener
             return true;
         }
 
+        // Utils
+        else if(action.equals("getMessages")) {
+            callbackContext.success(this.listMessages);
+            return true;
+        }
+
         else
             return false;
-
     }
 }
